@@ -376,7 +376,7 @@ Tab:AddSwitch("Auto Kill Npcs", function(bool)
                     local npc = workspace:FindFirstChild(npcName, true)
                     if npc and npc:IsA("Model") then
                         teleportBehind(npc)
-                        task.wait(2) -- Stay for 2 seconds
+                        task.wait(1) -- Stay for 1 seconds
                     end
                 end
                 task.wait(0.5)
