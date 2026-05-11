@@ -87,12 +87,6 @@ local ProteinTab = window:AddTab("Protein")
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local autoProtein = {
-    AtomCrunch = false,
-    ChocolateBar1 = false,
-    ChocolateBar2 = false,
-}
-
 local function BuyBoost(boostName)
     -- Using pcall to prevent the whole script from breaking if the event fails
     pcall(function()
