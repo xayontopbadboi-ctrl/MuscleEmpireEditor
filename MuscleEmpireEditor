@@ -100,7 +100,7 @@ local function BuyBoost(boostName)
 end
 
 -- Auto Buy Creatine
-ProteinTab:AddSwitch("Auto Buy Creatine", function(state)
+ProteinTab:AddSwitch("Auto Buy Creatine (2x)", function(state)
     autoProtein.Creatine = state 
     if state then
         task.spawn(function()
