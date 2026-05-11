@@ -85,6 +85,8 @@ end)
 -- ====================== PROTEIN TAB ======================
 local ProteinTab = window:AddTab("Protein")
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local autoProtein = {
     AtomCrunch = false,
     ChocolateBar1 = false,
@@ -92,26 +94,26 @@ local autoProtein = {
 }
 
 local function BuyBoost(boostName)
+    -- Using pcall to prevent the whole script from breaking if the event fails
     pcall(function()
         local args = {"buy", boostName, 1}
         ReplicatedStorage:WaitForChild("BuyBoostEvent"):FireServer(unpack(args))
     end)
 end
 
--- Atom Crunch
+-- Protein Switches
 ProteinTab:AddSwitch("Auto Buy Atom Crunch (1.8x)", function(Value)
     autoProtein.AtomCrunch = Value
     if Value then
         task.spawn(function()
             while autoProtein.AtomCrunch do
                 BuyBoost("Atom Crunch")
-                task.wait(10)
+                task.wait(10) -- 10 second delay
             end
         end)
     end
 end)
 
--- Chocolate Bar 1
 ProteinTab:AddSwitch("Auto Buy Chocolate Bar 1 (1.2x)", function(Value)
     autoProtein.ChocolateBar1 = Value
     if Value then
@@ -124,7 +126,6 @@ ProteinTab:AddSwitch("Auto Buy Chocolate Bar 1 (1.2x)", function(Value)
     end
 end)
 
--- Chocolate Bar 2
 ProteinTab:AddSwitch("Auto Buy Chocolate Bar 2 (1.25x)", function(Value)
     autoProtein.ChocolateBar2 = Value
     if Value then
