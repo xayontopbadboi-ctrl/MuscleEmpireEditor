@@ -7,7 +7,6 @@ local window = library:AddWindow("Kyo Hub", {
     can_resize = false
 })
 
--- ====================== MAIN FEATURES TAB ======================
 local MainTab = window:AddTab("Farm")
 
 MainTab:AddSwitch("Auto Strength", function(state)
