@@ -91,7 +91,6 @@ local autoProtein = {
     AtomCrunch = false,
     ChocolateBar1 = false,
     ChocolateBar2 = false,
-    BUFFBOSS Creatine = false,
 }
 
 local function BuyBoost(boostName)
