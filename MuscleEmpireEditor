@@ -49,7 +49,7 @@ MainTab:AddSwitch("Auto Rebirth", function(state)
 end)
 
 -- Strength Upgrade Switch
-MainTab:AddSwitch("Upgrade Strength", function(state)
+MainTab:AddSwitch("Auto Upgrade Strength", function(state)
     _G.UpgradeStrength = state
     if state then
         task.spawn(function()
