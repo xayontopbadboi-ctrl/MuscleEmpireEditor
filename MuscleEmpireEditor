@@ -338,6 +338,53 @@ Tab:AddSwitch("Auto Punch", function(Value)
     end
 end)
 
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local _G = getgenv and getgenv() or _G -- Ensures global variable access
+
+-- Toggle Variable
+_G.NPCLoop = false
+
+local targetNPCs = {
+    "DungeonNPC_1", "DungeonNPC_2", "DungeonNPC_3", 
+    "DungeonNPC_4", "DungeonNPC_5", "DungeonNPC_6", 
+    "DungeonNPC_7", "DungeonNPC_8", "DungeonNPC_9",
+    "DungeonBoss"
+}
+
+-- Teleport Logic
+local function teleportBehind(npc)
+    local char = player.Character
+    if char and char:FindFirstChild("HumanoidRootPart") and npc then
+        -- Calculate position 3 studs behind and rotate 180 to face them
+        local backPos = npc:GetPivot() * CFrame.new(0, 0, 3) * CFrame.Angles(0, math.rad(180), 0)
+        char:PivotTo(backPos)
+        char.HumanoidRootPart.AssemblyLinearVelocity = Vector3.new(0,0,0)
+    end
+end
+
+-- The Switch
+Tab:AddSwitch("Loop TP Behind NPCs", function(bool)
+    _G.NPCLoop = bool
+    
+    if bool then
+        task.spawn(function()
+            while _G.NPCLoop do
+                for _, npcName in ipairs(targetNPCs) do
+                    if not _G.NPCLoop then break end -- Stop immediately if toggled off
+                    
+                    local npc = workspace:FindFirstChild(npcName, true)
+                    if npc and npc:IsA("Model") then
+                        teleportBehind(npc)
+                        task.wait(2) -- Stay for 2 seconds
+                    end
+                end
+                task.wait(0.5)
+            end
+        end)
+    end
+end)
+
 _G.HeadSize = 20
 _G.HitboxEnabled = false 
 
