@@ -101,6 +101,27 @@ local function BuyBoost(boostName)
     end)
 end
 
+local buyLoop = false -- Variable to track the loop state
+
+ProteinTab:AddSwitch("Auto Buy Creatine", function(state)
+    buyLoop = state -- Sets buyLoop to true or false based on the switch
+    
+    if buyLoop then
+        task.spawn(function()
+            while buyLoop do
+                local args = {
+                    [1] = "buy",
+                    [2] = "BUFFBOSS Creatine",
+                    [3] = 1
+                }
+                game:GetService("ReplicatedStorage").BuyBoostEvent:FireServer(unpack(args))
+                
+                task.wait(10) -- Adjust this delay (seconds) so you don't lag or get kicked
+            end
+        end)
+    end
+end)
+
 -- Protein Switches
 ProteinTab:AddSwitch("Auto Buy Atom Crunch (1.8x)", function(Value)
     autoProtein.AtomCrunch = Value
