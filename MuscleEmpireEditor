@@ -933,12 +933,6 @@ local CreditsTab = Window:CreateTab("Credits 📜")
 
 CreditsTab:CreateSection("Credits")
 
-CreditsTab:CreateLabel({
-   Text = "🔥Developer By Kyo🔥",
-   Info = "🔥Kyo Private🔥"
-})
+local Label = Tab:CreateLabel("🥷🔥Kyo Privates🔥🥷", 4483362458, Color3.fromRGB(255, 255, 255), false) -- Title, Icon, Color, IgnoreTheme
 
-CreditsTab:CreateLabel({
-   Text = "🔥Designer: Kyo🔥",
-   Info = "OhUlol"
-})
+local Label = Tab:CreateLabel("🥷🔥Developer By Kyo🔥🥷", 4483362458, Color3.fromRGB(255, 255, 255), false) -- Title, Icon, Color, IgnoreTheme
