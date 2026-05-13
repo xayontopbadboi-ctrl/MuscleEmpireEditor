@@ -1,90 +1,137 @@
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/memejames/elerium-v2-ui-library//main/Library", true))()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Create Window
-local window = library:AddWindow("Kyo Hub", {
-    main_color = Color3.fromRGB(0, 0, 0), -- Custom blue theme
-    min_size = Vector2.new(550, 500),
-    can_resize = false
+local Window = Rayfield:CreateWindow({
+   Name = "⚡Kyo-Private⚡",
+   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "Private-Only",
+   LoadingSubtitle = "by-Kyo",
+   ShowText = "Ulol", -- for mobile users to unhide Rayfield, change if you'd like
+   Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+   ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from emitting warnings when the script has a version mismatch with the interface.
+
+   -- ScriptID = "sid_xxxxxxxxxxxx", -- Your Script ID from developer.sirius.menu — enables analytics, managed keys, and script hosting
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Big Hub"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include Discord.gg/. E.g. Discord.gg/ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the Discord every time they load it up
+   },
+
+   KeySystem = false, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "UhUlol",
+      Subtitle = "Key System",
+      Note = "Kyo-Hub-V2", -- Use this to tell the user how to get a key
+      FileName = "Key", -- It is recommended to use something unique, as other scripts using Rayfield may overwrite your key file
+      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"Hello"} -- List of keys that the system will accept, can be RAW file links (pastebin, github, etc.) or simple strings ("hello", "key22")
+   }
 })
 
-local MainTab = window:AddTab("Farm")
+-- ==========================================
+-- FARM TAB
+-- ==========================================
+local FarmTab = Window:CreateTab("💪Farm")
 
-MainTab:AddSwitch("Auto Strength", function(state)
-    _G.AutoStrength = state
-    
-    -- Using task.spawn so the loop doesn't freeze the rest of the UI
-    task.spawn(function()
-        while _G.AutoStrength do
-            game:GetService("ReplicatedStorage"):WaitForChild("addStrength"):FireServer()
-            task.wait(0.1) -- Adjust this delay if you get kicked for event spam
-        end
-    end)
-end)
-
-MainTab:AddSwitch("Auto Shield", function(state)
-    _G.AutoShield = state
-    
-    -- Spawn a new task to handle the firing loop without freezing the UI
-    task.spawn(function()
-        while _G.AutoShield do
-            game:GetService("ReplicatedStorage"):WaitForChild("ShieldTrainingEvent"):FireServer()
-            task.wait(0.1) -- Required delay to prevent lag/kick
-        end
-    end)
-end)
-
-MainTab:AddSwitch("Auto Rebirth", function(state)
-    _G.AutoRebirth = state
-    
-    task.spawn(function()
-        while _G.AutoRebirth do
-            -- Fires the rebirth event found in rEvents
-            game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("rebirthEvent"):FireServer()
-            
-            -- Rebirths usually require a small delay to process (0.1 second is safe)
-            task.wait(0.1) 
-        end
-    end)
-end)
-
--- Strength Upgrade Switch
-MainTab:AddSwitch("Auto Upgrade Strength", function(state)
-    _G.UpgradeStrength = state
-    if state then
-        task.spawn(function()
-            while _G.UpgradeStrength do
-                local args = {
-                    [1] = "upgrade",
-                    [2] = "strength"
-                }
-                game:GetService("ReplicatedStorage").ClanEvent:FireServer(unpack(args))
-                task.wait(0.1)
+FarmTab:CreateToggle({
+   Name = "Auto Strength",
+   CurrentValue = false,
+   Callback = function(state)
+      _G.AutoStrength = state
+      if state then
+         task.spawn(function()
+            while _G.AutoStrength do
+               game:GetService("ReplicatedStorage"):WaitForChild("addStrength"):FireServer()
+               task.wait(0.1)
             end
-        end)
-    end
-end)
+         end)
+      end
+   end,
+})
 
--- Shield Upgrade Switch
-MainTab:AddSwitch("Auto Upgrade Shield", function(bool)
-    _G.AutoShield = bool
-    if bool then
-        task.spawn(function()
+FarmTab:CreateToggle({
+   Name = "Auto Shield",
+   CurrentValue = false,
+   Callback = function(state)
+      _G.AutoShield = state
+      if state then
+         task.spawn(function()
             while _G.AutoShield do
-                local args = {
-                    [1] = "upgrade",
-                    [2] = "shield"
-                }
-                game:GetService("ReplicatedStorage").ClanEvent:FireServer(unpack(args))
-                task.wait(0.1)
+               game:GetService("ReplicatedStorage"):WaitForChild("ShieldTrainingEvent"):FireServer()
+               task.wait(0.1)
             end
-        end)
-    end
-end)
+         end)
+      end
+   end,
+})
 
-local ProteinTab = window:AddTab("Protein")
+FarmTab:CreateToggle({
+   Name = "Auto Rebirth",
+   CurrentValue = false,
+   Callback = function(state)
+      _G.AutoRebirth = state
+      if state then
+         task.spawn(function()
+            while _G.AutoRebirth do
+               game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("rebirthEvent"):FireServer()
+               task.wait(0.1)
+            end
+         end)
+      end
+   end,
+})
+
+FarmTab:CreateToggle({
+   Name = "Auto Upgrade Strength",
+   CurrentValue = false,
+   Callback = function(state)
+      _G.UpgradeStrength = state
+      if state then
+         task.spawn(function()
+            while _G.UpgradeStrength do
+               local args = {[1] = "upgrade", [2] = "strength"}
+               game:GetService("ReplicatedStorage").ClanEvent:FireServer(unpack(args))
+               task.wait(0.1)
+            end
+         end)
+      end
+   end,
+})
+
+FarmTab:CreateToggle({
+   Name = "Auto Upgrade Shield",
+   CurrentValue = false,
+   Callback = function(state)
+      _G.UpgradeShield = state
+      if state then
+         task.spawn(function()
+            while _G.UpgradeShield do
+               local args = {[1] = "upgrade", [2] = "shield"}
+               game:GetService("ReplicatedStorage").ClanEvent:FireServer(unpack(args))
+               task.wait(0.1)
+            end
+         end)
+      end
+   end,
+})
+
+-- ==========================================
+-- PROTEIN TAB
+-- ==========================================
+local ProteinTab = Window:CreateTab("🍫Protein")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- Define this table so the switches have somewhere to save their "Value"
 local autoProtein = {
     AtomCrunch = false,
     ChocolateBar1 = false,
@@ -99,91 +146,125 @@ local function BuyBoost(boostName)
     end)
 end
 
--- Auto Buy Creatine
-ProteinTab:AddSwitch("Auto Buy Creatine (2x)", function(state)
-    autoProtein.Creatine = state 
-    if state then
-        task.spawn(function()
+ProteinTab:CreateToggle({
+   Name = "Auto Buy Creatine (2x)",
+   CurrentValue = false,
+   Callback = function(state)
+      autoProtein.Creatine = state 
+      if state then
+         task.spawn(function()
             while autoProtein.Creatine do
-                BuyBoost("BUFFBOSS Creatine")
-                task.wait(10)
+               BuyBoost("BUFFBOSS Creatine")
+               task.wait(10)
             end
-        end)
-    end
-end)
+         end)
+      end
+   end,
+})
 
--- Auto Buy Atom Crunch
-ProteinTab:AddSwitch("Auto Buy Atom Crunch (1.8x)", function(Value)
-    autoProtein.AtomCrunch = Value
-    if Value then
-        task.spawn(function()
+ProteinTab:CreateToggle({
+   Name = "Auto Buy Atom Crunch (1.8x)",
+   CurrentValue = false,
+   Callback = function(state)
+      autoProtein.AtomCrunch = state
+      if state then
+         task.spawn(function()
             while autoProtein.AtomCrunch do
-                BuyBoost("Atom Crunch")
-                task.wait(10)
+               BuyBoost("Atom Crunch")
+               task.wait(10)
             end
-        end)
-    end
-end)
+         end)
+      end
+   end,
+})
 
--- Auto Buy Chocolate Bar 1
-ProteinTab:AddSwitch("Auto Buy Chocolate Bar 1 (1.2x)", function(Value)
-    autoProtein.ChocolateBar1 = Value
-    if Value then
-        task.spawn(function()
+ProteinTab:CreateToggle({
+   Name = "Auto Buy Chocolate Bar 1 (1.2x)",
+   CurrentValue = false,
+   Callback = function(state)
+      autoProtein.ChocolateBar1 = state
+      if state then
+         task.spawn(function()
             while autoProtein.ChocolateBar1 do
-                BuyBoost("Chocolate Bar 1")
-                task.wait(10)
+               BuyBoost("Chocolate Bar 1")
+               task.wait(10)
             end
-        end)
-    end
-end)
+         end)
+      end
+   end,
+})
 
--- Auto Buy Chocolate Bar 2
-ProteinTab:AddSwitch("Auto Buy Chocolate Bar 2 (1.25x)", function(Value)
-    autoProtein.ChocolateBar2 = Value
-    if Value then
-        task.spawn(function()
+ProteinTab:CreateToggle({
+   Name = "Auto Buy Chocolate Bar 2 (1.25x)",
+   CurrentValue = false,
+   Callback = function(state)
+      autoProtein.ChocolateBar2 = state
+      if state then
+         task.spawn(function()
             while autoProtein.ChocolateBar2 do
-                BuyBoost("Chocolate Bar 2")
-                task.wait(10)
+               BuyBoost("Chocolate Bar 2")
+               task.wait(10)
             end
-        end)
-    end
-end)
+         end)
+      end
+   end,
+})
 
--- Manual Buttons
-ProteinTab:AddButton("Buy Atom Crunch (Manual)", function() BuyBoost("Atom Crunch") end)
-ProteinTab:AddButton("Buy Chocolate Bar 1 (Manual)", function() BuyBoost("Chocolate Bar 1") end)
-ProteinTab:AddButton("Buy Chocolate Bar 2 (Manual)", function() BuyBoost("Chocolate Bar 2") end)
+ProteinTab:CreateButton({
+   Name = "Buy Atom Crunch (Manual)",
+   Callback = function() BuyBoost("Atom Crunch") end,
+})
 
-local Tab = window:AddTab("Auto Eggs") -- Name of tab
+ProteinTab:CreateButton({
+   Name = "Buy Chocolate Bar 1 (Manual)",
+   Callback = function() BuyBoost("Chocolate Bar 1") end,
+ })
 
-Tab:AddSwitch("Auto Golden Open Egg", function(state)
-    _G.AutoEgg = state
-    while _G.AutoEgg do
-        local args = {
-            [1] = "OpenEgg"
-        }
-        game:GetService("ReplicatedStorage").PetEggEvent994:FireServer(unpack(args))
-        task.wait(0.1) -- Adjust delay here to prevent crashing
-    end
-end)
+ProteinTab:CreateButton({
+   Name = "Buy Chocolate Bar 2 (Manual)",
+   Callback = function() BuyBoost("Chocolate Bar 2") end,
+})
 
-Tab:AddSwitch("Auto Open Eggs", function(bool)
-    _G.AutoEgg = bool
-    
-    task.spawn(function()
-        while _G.AutoEgg do
-            local args = {
-                [1] = "OpenEgg"
-            }
-            game:GetService("ReplicatedStorage").PetEggEvent:FireServer(unpack(args))
-            task.wait(0.1) -- Adjust delay to prevent crashing
-        end
-    end)
-end)
+-- ==========================================
+-- EGGS TAB
+-- ==========================================
+local EggTab = Window:CreateTab("🥚Auto Eggs")
 
-local Toggled = false
+EggTab:CreateToggle({
+   Name = "Auto Golden Open Egg",
+   CurrentValue = false,
+   Callback = function(state)
+      _G.AutoGoldenEgg = state
+      if state then
+         task.spawn(function()
+            while _G.AutoGoldenEgg do
+               local args = {[1] = "OpenEgg"}
+               game:GetService("ReplicatedStorage").PetEggEvent994:FireServer(unpack(args))
+               task.wait(0.1)
+            end
+         end)
+      end
+   end,
+})
+
+EggTab:CreateToggle({
+   Name = "Auto Open Eggs",
+   CurrentValue = false,
+   Callback = function(state)
+      _G.AutoEgg = state
+      if state then
+         task.spawn(function()
+            while _G.AutoEgg do
+               local args = {[1] = "OpenEgg"}
+               game:GetService("ReplicatedStorage").PetEggEvent:FireServer(unpack(args))
+               task.wait(0.1)
+            end
+         end)
+      end
+   end,
+})
+
+local DeleteToggled = false
 local PetList = {
     "Nebula_1", "Bubbles_1", "Bubbles_13", "Mochi_1", "Mochi_2", 
     "Inferno_1", "Mochi_3", "Bubbles_2", "Mochi_4", "Mochi_10", 
@@ -195,168 +276,164 @@ local PetList = {
     "Mochi_11", "Bubbles_16", "Bubbles_17"
 }
 
--- AddButton with Toggle Logic
-local DeleteBtn = Tab:AddButton("Auto Delete: OFF", function()
-    Toggled = not Toggled
-    
-    -- Change button appearance based on state
-    if Toggled then
-        print("Auto Delete Started")
-    else
-        print("Auto Delete Stopped")
-    end
-end)
+EggTab:CreateToggle({
+   Name = "Auto Delete Pets",
+   CurrentValue = false,
+   Callback = function(state)
+      DeleteToggled = state
+   end,
+})
 
--- Execution loop
+-- Separate background loop for deletion
 task.spawn(function()
     while true do
-        if Toggled then
+        if DeleteToggled then
             local args = {
                 [1] = "DeletePets",
                 [2] = PetList
             }
             game:GetService("ReplicatedStorage").PetDeleteEvent:FireServer(unpack(args))
         end
-        task.wait(1) -- Delay to prevent server kicks
+        task.wait(1)
     end
 end)
 
-local Tab = window:AddTab("Combat☠️") -- Name of tab
+local CombatTab = Window:CreateTab("Combat☠️")
 
 local Players = game:GetService("Players")
 local localPlayer = Players.LocalPlayer
 
-Tab:AddSwitch("Auto Kill", function(Value)
-    _G.Spawnkill = Value -- 'Value' comes from the switch (true or false)
-    
-    if _G.Spawnkill then
-        task.spawn(function()
+-- Auto Kill Toggle
+CombatTab:CreateToggle({
+   Name = "Auto Kill",
+   CurrentValue = false,
+   Callback = function(Value)
+      _G.Spawnkill = Value
+      
+      if _G.Spawnkill then
+         task.spawn(function()
             while _G.Spawnkill do
-                task.wait()
-                pcall(function()
-                    local character = localPlayer.Character
-                    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-                    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-                    
-                    -- Look for tool in Character or Backpack
-                    local tool = character:FindFirstChild("Punch") or localPlayer.Backpack:FindFirstChild("Punch")
-                    
-                    if rootPart and humanoid and tool then
-                        -- Auto Equip
-                        if tool.Parent ~= character then 
-                            humanoid:EquipTool(tool) 
+               task.wait()
+               pcall(function()
+                  local character = localPlayer.Character
+                  local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+                  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+                  
+                  local tool = character:FindFirstChild("Punch") or localPlayer.Backpack:FindFirstChild("Punch")
+                  
+                  if rootPart and humanoid and tool then
+                     if tool.Parent ~= character then 
+                        humanoid:EquipTool(tool) 
+                     end
+                     tool:Activate()
+                     
+                     for _, player in ipairs(Players:GetPlayers()) do
+                        if player ~= localPlayer and player.Character then
+                           local tRoot = player.Character:FindFirstChild("HumanoidRootPart")
+                           local tHum = player.Character:FindFirstChild("Humanoid")
+                           
+                           if tRoot and tHum and tHum.Health > 0 then
+                              rootPart.CFrame = tRoot.CFrame * CFrame.new(0, 0, 3)
+                              break
+                           end
                         end
-                        -- Auto Use
-                        tool:Activate()
-                        
-                        -- Target Loop
-                        for _, player in ipairs(Players:GetPlayers()) do
-                            if player ~= localPlayer and player.Character then
-                                local tRoot = player.Character:FindFirstChild("HumanoidRootPart")
-                                local tHum = player.Character:FindFirstChild("Humanoid")
-                                
-                                if tRoot and tHum and tHum.Health > 0 then
-                                    rootPart.CFrame = tRoot.CFrame * CFrame.new(0, 0, 3)
-                                    break -- Stay on current target
-                                end
-                            end
-                        end
-                    end
-                end)
+                     end
+                  end
+               end)
             end
-        end)
-    end
-end)
-
+         end)
+      end
+   end,
+})
 
 local TargetName = "" 
 local LoopKilling = false
 
-Tab:AddTextBox("Target Player Name", function(text)
-    TargetName = text
-end, {
-    ["placeholder"] = "Enter Username...",
-    ["clear"] = false
+-- Target Player Input Field
+CombatTab:CreateInput({
+   Name = "Target Player Name",
+   PlaceholderText = "Enter Username...",
+   RemoveTextAfterFocusLost = false,
+   Callback = function(text)
+      TargetName = text
+   end,
 })
 
-Tab:AddSwitch("TP Kill Target", function(state)
-    LoopKilling = state
-    if LoopKilling then
-        task.spawn(function()
-            local localPlayer = game.Players.LocalPlayer
+-- TP Kill Target Toggle
+CombatTab:CreateToggle({
+   Name = "TP Kill Target",
+   CurrentValue = false,
+   Callback = function(state)
+      LoopKilling = state
+      if LoopKilling then
+         task.spawn(function()
             while LoopKilling do
-                local target = game.Players:FindFirstChild(TargetName)
-                
-                if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and 
-                   localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                    
-                    -- 1. Teleport behind the target
-                    localPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
-                    
-                    -- 2. Auto-Equip Logic (If not holding a tool, grab one from backpack)
-                    local tool = localPlayer.Character:FindFirstChildOfClass("Tool")
-                    if not tool then
-                        local backpackTool = localPlayer.Backpack:FindFirstChildOfClass("Tool")
-                        if backpackTool then
-                            localPlayer.Character.Humanoid:EquipTool(backpackTool)
-                            tool = backpackTool
-                        end
-                    end
-                    
-                    -- 3. Auto Attack Logic
-                    if tool then
-                        tool:Activate() -- Swings the sword/uses the tool
-                    end
-                end
-                
-                task.wait(0.01) 
+               local target = game.Players:FindFirstChild(TargetName)
+               
+               if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and 
+                  localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                  
+                  localPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
+                  
+                  local tool = localPlayer.Character:FindFirstChildOfClass("Tool")
+                  if not tool then
+                     local backpackTool = localPlayer.Backpack:FindFirstChildOfClass("Tool")
+                     if backpackTool then
+                        localPlayer.Character.Humanoid:EquipTool(backpackTool)
+                        tool = backpackTool
+                     end
+                  end
+                  
+                  if tool then
+                     tool:Activate()
+                  end
+               end
+               
+               task.wait(0.01) 
             end
-        end)
-    end
-end)
+         end)
+      end
+   end,
+})
 
 local AutoPunchActive = false
 
-Tab:AddSwitch("Auto Punch", function(Value)
-    AutoPunchActive = Value
-    
-    local player = game.Players.LocalPlayer
-    
-    if Value then
-        -- 1. Handling the Auto-Equip & Click Logic
-        task.spawn(function()
+-- Auto Punch Toggle
+CombatTab:CreateToggle({
+   Name = "Auto Punch",
+   CurrentValue = false,
+   Callback = function(Value)
+      AutoPunchActive = Value
+      
+      if Value then
+         task.spawn(function()
             while AutoPunchActive do
-                local char = player.Character
-                local backpack = player:FindFirstChild("Backpack")
-                local tool = char and char:FindFirstChild("Punch")
-                
-                -- If not holding the tool, try to find it in backpack and equip it
-                if not tool and backpack then
-                    local bpTool = backpack:FindFirstChild("Punch")
-                    if bpTool then
-                        local hum = char and char:FindFirstChildOfClass("Humanoid")
-                        if hum then
-                            hum:EquipTool(bpTool)
-                        end
-                    end
-                end
-                
-                -- If we are now holding the tool, activate it
-                if char and char:FindFirstChild("Punch") then
-                    char.Punch:Activate()
-                end
-                
-                task.wait(0.1) -- Punch speed
+               local char = localPlayer.Character
+               local backpack = localPlayer:FindFirstChild("Backpack")
+               local tool = char and char:FindFirstChild("Punch")
+               
+               if not tool and backpack then
+                  local bpTool = backpack:FindFirstChild("Punch")
+                  if bpTool then
+                     local hum = char and char:FindFirstChildOfClass("Humanoid")
+                     if hum then
+                        hum:EquipTool(bpTool)
+                     end
+                  end
+               end
+               
+               if char and char:FindFirstChild("Punch") then
+                  char.Punch:Activate()
+               end
+               
+               task.wait(0.1)
             end
-        end)
-    end
-end)
+         end)
+      end
+   end,
+})
 
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local _G = getgenv and getgenv() or _G -- Ensures global variable access
-
--- Toggle Variable
+local _G = getgenv and getgenv() or _G
 _G.NPCLoop = false
 
 local targetNPCs = {
@@ -366,66 +443,71 @@ local targetNPCs = {
     "DungeonBoss"
 }
 
--- Teleport Logic
 local function teleportBehind(npc)
-    local char = player.Character
+    local char = localPlayer.Character
     if char and char:FindFirstChild("HumanoidRootPart") and npc then
-        -- Calculate position 3 studs behind and rotate 180 to face them
         local backPos = npc:GetPivot() * CFrame.new(0, 0, 3) * CFrame.Angles(0, math.rad(180), 0)
         char:PivotTo(backPos)
         char.HumanoidRootPart.AssemblyLinearVelocity = Vector3.new(0,0,0)
     end
 end
 
--- The Switch
-Tab:AddSwitch("Auto Kill Npcs", function(bool)
-    _G.NPCLoop = bool
-    
-    if bool then
-        task.spawn(function()
+-- Auto Kill NPCs Toggle
+CombatTab:CreateToggle({
+   Name = "Auto Kill Npcs",
+   CurrentValue = false,
+   Callback = function(bool)
+      _G.NPCLoop = bool
+      
+      if bool then
+         task.spawn(function()
             while _G.NPCLoop do
-                for _, npcName in ipairs(targetNPCs) do
-                    if not _G.NPCLoop then break end -- Stop immediately if toggled off
-                    
-                    local npc = workspace:FindFirstChild(npcName, true)
-                    if npc and npc:IsA("Model") then
-                        teleportBehind(npc)
-                        task.wait(1) -- Stay for 1 seconds
-                    end
-                end
-                task.wait(0.5)
+               for _, npcName in ipairs(targetNPCs) do
+                  if not _G.NPCLoop then break end
+                  
+                  local npc = workspace:FindFirstChild(npcName, true)
+                  if npc and npc:IsA("Model") then
+                     teleportBehind(npc)
+                     task.wait(1)
+                  end
+               end
+               task.wait(0.5)
             end
-        end)
-    end
-end)
+         end)
+      end
+   end,
+})
 
 _G.HeadSize = 20
 _G.HitboxEnabled = false 
 
--- Elerium V2 Switch
-Tab:AddSwitch("Kill Aura", function(Value)
-    _G.HitboxEnabled = Value
-    
-    -- Reset hitboxes when turned off
-    if not Value then
-        for _, v in pairs(game:GetService('Players'):GetPlayers()) do
-            if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-                v.Character.HumanoidRootPart.Size = Vector3.new(2, 2, 1) -- Standard Roblox HRP size
-                v.Character.HumanoidRootPart.Transparency = 1
+-- Kill Aura / Hitbox Expander Toggle
+CombatTab:CreateToggle({
+   Name = "Kill Aura",
+   CurrentValue = false,
+   Callback = function(Value)
+      _G.HitboxEnabled = Value
+      
+      if not Value then
+         for _, v in pairs(game:GetService('Players'):GetPlayers()) do
+            if v ~= localPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+               v.Character.HumanoidRootPart.Size = Vector3.new(2, 2, 1)
+               v.Character.HumanoidRootPart.Transparency = 1
             end
-        end
-    end
-end)
+         end
+      end
+   end,
+})
 
--- Constant loop for the expander
+-- Persistent RunService loop for hitboxes
 game:GetService('RunService').RenderStepped:Connect(function()
     if _G.HitboxEnabled then
         for _, v in pairs(game:GetService('Players'):GetPlayers()) do
-            if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+            if v ~= localPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
                 pcall(function()
                     local hrp = v.Character.HumanoidRootPart
                     hrp.Size = Vector3.new(_G.HeadSize, _G.HeadSize, _G.HeadSize)
-                    hrp.Transparency = 0.7 -- Set to 0.7 so you can actually see the expanded hitbox
+                    hrp.Transparency = 0.7
                     hrp.BrickColor = BrickColor.new("Really black")
                     hrp.Material = Enum.Material.Neon
                     hrp.CanCollide = false
@@ -435,218 +517,428 @@ game:GetService('RunService').RenderStepped:Connect(function()
     end
 end)
 
-local Tab = window:AddTab("Misc⚙️") -- Name of tab
+-- Create separate Navigation Tabs
+local StatsTab = Window:CreateTab("📊 Stats", 4483362458)
+local SpyTab = Window:CreateTab("👁️ Spy", 4483362458)
 
-Tab:AddButton("Load Hand Master R15", function()
-    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Hand-Master-r15-Anim-Edited-Becoming-Puncher-By-Leorio-208942"))()
+-- [TAB 1 ELEMENTS] Local Player Rows
+local PowerLabel = StatsTab:CreateParagraph({Title = "💪 Power: Checking...", Content = "Session Gained: +0"})
+local ShieldLabel = StatsTab:CreateParagraph({Title = "🛡️ Shield: Checking...", Content = "Session Gained: +0"})
+local RebirthsLabel = StatsTab:CreateParagraph({Title = "🔥 Rebirths: Checking...", Content = "Session Gained: +0"})
+
+-- [TAB 2 ELEMENTS] Spy Player Rows
+local SpyTarget = nil
+local SpyPower = SpyTab:CreateParagraph({Title = "💪 Target Power: None", Content = "Waiting for selection..."})
+local SpyShield = SpyTab:CreateParagraph({Title = "🛡️ Target Shield: None", Content = "Waiting for selection..."})
+local SpyRebirths = SpyTab:CreateParagraph({Title = "🔥 Target Rebirths: None", Content = "Waiting for selection..."})
+
+-- Multi-Shorthand Letter Formatter (K, M, B, T)
+local function formatNumber(val)
+    local num = tonumber(val)
+    if not num then return 0, tostring(val) end
+    
+    local raw = num
+    local suffixes = {"", "K", "M", "B", "T", "Qa"}
+    local index = 1
+    
+    while math.abs(num) >= 1000 and index < #suffixes do
+        num = num / 1000
+        index = index + 1
+    end
+    
+    if index > 1 then
+        return raw, string.format("%.1f%s", num, suffixes[index])
+    else
+        return raw, string.format("%d", num)
+    end
+end
+
+-- Generic search utility targeting Muscle Empire folders
+local function findStatValue(playerObj, names)
+    if not playerObj then return 0 end
+    local targets = {"leaderstats", "MainStats", "Stats", "PlayerStats"}
+    for _, folderName in ipairs(targets) do
+        local folder = playerObj:FindFirstChild(folderName)
+        if folder then
+            for _, name in ipairs(names) do
+                local obj = folder:FindFirstChild(name)
+                if obj and tonumber(obj.Value) then return tonumber(obj.Value) end
+            end
+        end
+    end
+    for _, name in ipairs(names) do
+        local obj = playerObj:FindFirstChild(name)
+        if obj and tonumber(obj.Value) then return tonumber(obj.Value) end
+    end
+    return 0
+end
+
+-- Generate list of player names for the dropdown
+local playersService = game:GetService("Players")
+local function getPlayerNames()
+    local nameList = {}
+    for _, p in ipairs(playersService:GetPlayers()) do
+        if p ~= playersService.LocalPlayer then
+            table.insert(nameList, p.Name)
+        end
+    end
+    return nameList
+end
+
+-- Create the Player Selection Dropdown
+local PlayerDropdown = SpyTab:CreateDropdown({
+    Name = "Select Target Player",
+    Options = getPlayerNames(),
+    CurrentOption = {""},
+    MultipleOptions = false,
+    Flag = "SpyTargetDropdown",
+    Callback = function(Option)
+        local targetName = Option[1]
+        SpyTarget = playersService:FindFirstChild(targetName)
+        if not SpyTarget then
+            SpyPower:Set({Title = "💪 Target Power: None", Content = "Player left the game."})
+            SpyShield:Set({Title = "🛡️ Target Shield: None", Content = "Player left the game."})
+            SpyRebirths:Set({Title = "🔥 Target Rebirths: None", Content = "Player left the game."})
+        end
+    end,
+})
+
+-- Keep the dropdown options list updated when players join/leave
+playersService.PlayerAdded:Connect(function() PlayerDropdown:Refresh(getPlayerNames(), true) end)
+playersService.PlayerRemoving:Connect(function(removedPlayer) 
+    if SpyTarget == removedPlayer then SpyTarget = nil end
+    PlayerDropdown:Refresh(getPlayerNames(), true) 
 end)
 
-Tab:AddButton("Rejoin Game", function()
-    local TeleportService = game:GetService("TeleportService")
-    local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
+-- Memory Baseline Caches
+local startS1, startS2, startS3 = nil, nil, nil
+local localPlayer = playersService.LocalPlayer
 
-    if #Players:GetPlayers() <= 1 then
-        TeleportService:Teleport(game.PlaceId, LocalPlayer)
-    else
-        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+-- Tracking and Spy Loop Engine
+task.spawn(function()
+    while task.wait(0.2) do
+        -- Local Player Tracking
+        pcall(function()
+            local s1Raw = findStatValue(localPlayer, {"Strength", "Power", "STRENGTH", "POWER"})
+            local s2Raw = findStatValue(localPlayer, {"Durability", "Endurance", "Shield", "SHIELD", "DURABILITY", "ENDURANCE"})
+            local s3Raw = findStatValue(localPlayer, {"Rebirths", "Rebirth", "Levels", "Level", "REBIRTH"})
+            
+            if s1Raw > 0 and startS1 == nil then startS1 = s1Raw end
+            if s2Raw > 0 and startS2 == nil then startS2 = s2Raw end
+            if s3Raw > 0 and startS3 == nil then startS3 = s3Raw end
+            
+            local _, s1Text = formatNumber(s1Raw)
+            local _, s2Text = formatNumber(s2Raw)
+            local _, s3Text = formatNumber(s3Raw)
+            
+            local diffS1 = s1Raw - (startS1 or s1Raw)
+            local diffS2 = s2Raw - (startS2 or s2Raw)
+            local diffS3 = s3Raw - (startS3 or s3Raw)
+            
+            local _, s1GainText = formatNumber(diffS1)
+            local _, s2GainText = formatNumber(diffS2)
+            local _, s3GainText = formatNumber(diffS3)
+            
+            PowerLabel:Set({Title = "💪 Power: " .. s1Text, Content = "Session Gained: +" .. s1GainText})
+            ShieldLabel:Set({Title = "🛡️ Shield: " .. s2Text, Content = "Session Gained: +" .. s2GainText})
+            RebirthsLabel:Set({Title = "🔥 Rebirths: " .. s3Text, Content = "Session Gained: +" .. s3GainText})
+        end)
+
+        -- Spy Target Player Tracking
+        pcall(function()
+            if SpyTarget and SpyTarget.Parent == playersService then
+                local t1Raw = findStatValue(SpyTarget, {"Strength", "Power", "STRENGTH", "POWER"})
+                local t2Raw = findStatValue(SpyTarget, {"Durability", "Endurance", "Shield", "SHIELD", "DURABILITY", "ENDURANCE"})
+                local t3Raw = findStatValue(SpyTarget, {"Rebirths", "Rebirth", "Levels", "Level", "REBIRTH"})
+
+                local _, t1Text = formatNumber(t1Raw)
+                local _, t2Text = formatNumber(t2Raw)
+                local _, t3Text = formatNumber(t3Raw)
+
+                SpyPower:Set({Title = "💪 Target Power: " .. t1Text, Content = "Target Username: " .. SpyTarget.Name})
+                SpyShield:Set({Title = "🛡️ Target Shield: " .. t2Text, Content = "Target Status: Monitored"})
+                SpyRebirths:Set({Title = "🔥 Target Rebirths: " .. t3Text, Content = "Data synced live"})
+            elseif SpyTarget == nil then
+                SpyPower:Set({Title = "💪 Target Power: None", Content = "Select a player from the menu above."})
+                SpyShield:Set({Title = "🛡️ Target Shield: None", Content = "Select a player from the menu above."})
+                SpyRebirths:Set({Title = "🔥 Target Rebirths: None", Content = "Select a player from the menu above."})
+            end
+        end)
     end
 end)
 
-Tab:AddButton("Ultra Anti-Lag", function()
-    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Ultra-AntiLag-147674"))()
-end)
+-- ==========================================
+-- MISC TAB
+-- ==========================================
+local MiscTab = Window:CreateTab("⚙️ Misc")
 
-Tab:AddButton("Load Emotes Script", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/7yd7/Hub/refs/heads/Branch/GUIS/Emotes.lua"))()
-end)
+MiscTab:CreateButton({
+   Name = "Load Hand Master R15",
+   Callback = function()
+      loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Hand-Master-r15-Anim-Edited-Becoming-Puncher-By-Leorio-208942"))()
+   end,
+})
 
-Tab:AddButton("Jerk Tool (R15)", function()
-    loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
-end)
+MiscTab:CreateButton({
+   Name = "Rejoin Game",
+   Callback = function()
+      local TeleportService = game:GetService("TeleportService")
+      local Players = game:GetService("Players")
+      local LocalPlayer = Players.LocalPlayer
+
+      if #Players:GetPlayers() <= 1 then
+         TeleportService:Teleport(game.PlaceId, LocalPlayer)
+      else
+         TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+      end
+   end,
+})
+
+MiscTab:CreateButton({
+   Name = "Ultra Anti-Lag",
+   Callback = function()
+      loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Ultra-AntiLag-147674"))()
+   end,
+})
+
+MiscTab:CreateButton({
+   Name = "Load Emotes Script",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/7yd7/Hub/refs/heads/Branch/GUIS/Emotes.lua"))()
+   end,
+})
+
+MiscTab:CreateButton({
+   Name = "Jerk Tool (R15)",
+   Callback = function()
+      loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
+   end,
+})
 
 local WalkflingEnabled = false
--- Changed AddToggle to AddSwitch
-Tab:AddSwitch("OP Walkfling", function(Value)
-    WalkflingEnabled = Value
-    task.spawn(function()
-        local lp = game.Players.LocalPlayer
-        while WalkflingEnabled do
+MiscTab:CreateToggle({
+   Name = "OP Walkfling",
+   CurrentValue = false,
+   Callback = function(Value)
+      WalkflingEnabled = Value
+      if Value then
+         task.spawn(function()
+            local lp = game.Players.LocalPlayer
+            while WalkflingEnabled do
+               local char = lp.Character
+               local hrp = char and char:FindFirstChild("HumanoidRootPart")
+               local hum = char and char:FindFirstChildOfClass("Humanoid")
+               
+               if hrp and hum then
+                  hum:SetStateEnabled(Enum.HumanoidStateType.Physics, true)
+                  hrp.AssemblyLinearVelocity = Vector3.new(0, 5000, 0)
+                  hrp.AssemblyAngularVelocity = Vector3.new(0, 10000, 0)
+               end
+               task.wait(0.05)
+            end
+            
             local char = lp.Character
             local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            local hum = char and char:FindFirstChildOfClass("Humanoid")
-            
-            if hrp and hum then
-                hum:SetStateEnabled(Enum.HumanoidStateType.Physics, true)
-                hrp.AssemblyLinearVelocity = Vector3.new(0, 5000, 0)
-                hrp.AssemblyAngularVelocity = Vector3.new(0, 10000, 0)
+            if hrp then
+               hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+               hrp.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
             end
-            task.wait(0.05)
-        end
-        
-        local char = lp.Character
-        local hrp = char and char:FindFirstChild("HumanoidRootPart")
-        if hrp then
-            hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-            hrp.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
-        end
-    end)
-end)
+         end)
+      end
+   end,
+})
 
 local ClickTPEnabled = false
 local Mouse = game.Players.LocalPlayer:GetMouse()
--- Changed AddToggle to AddSwitch
-Tab:AddSwitch("Click Teleport", function(Value)
-    ClickTPEnabled = Value
-end)
+
+MiscTab:CreateToggle({
+   Name = "Click Teleport",
+   CurrentValue = false,
+   Callback = function(Value)
+      ClickTPEnabled = Value
+   end,
+})
 
 Mouse.Button1Down:Connect(function()
-    if ClickTPEnabled then
-        local character = game.Players.LocalPlayer.Character
-        local root = character and character:FindFirstChild("HumanoidRootPart")
-        if root then
-            root.CFrame = CFrame.new(Mouse.Hit.p + Vector3.new(0, 3, 0))
-        end
-    end
+   if ClickTPEnabled then
+      local character = game.Players.LocalPlayer.Character
+      local root = character and character:FindFirstChild("HumanoidRootPart")
+      if root then
+         root.CFrame = CFrame.new(Mouse.Hit.p + Vector3.new(0, 3, 0))
+      end
+   end
 end)
 
--- Changed AddToggle to AddSwitch
-Tab:AddSwitch("Anti-AFK", function(Value)
-    _G.AntiAFK = Value
-    if Value then
-        _G.AFKConnection = game.Players.LocalPlayer.Idled:Connect(function()
+MiscTab:CreateToggle({
+   Name = "Anti-AFK",
+   CurrentValue = false,
+   Callback = function(Value)
+      _G.AntiAFK = Value
+      if Value then
+         _G.AFKConnection = game.Players.LocalPlayer.Idled:Connect(function()
             if _G.AntiAFK then
-                game:GetService("VirtualUser"):CaptureController()
-                game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+               game:GetService("VirtualUser"):CaptureController()
+               game:GetService("VirtualUser"):ClickButton2(Vector2.new())
             end
-        end)
-    elseif _G.AFKConnection then
-        _G.AFKConnection:Disconnect()
-        _G.AFKConnection = nil
-    end
-end)
+         end)
+      elseif _G.AFKConnection then
+         _G.AFKConnection:Disconnect()
+         _G.AFKConnection = nil
+      end
+   end,
+})
 
-local Tab = window:AddTab("Movement⚡") -- Name of tab
+-- ==========================================
+-- MOVEMENT TAB
+-- ==========================================
+local MovementTab = Window:CreateTab("⚡ Movement")
 
-Tab:AddButton("Load Fly GUI V3", function()
-    -- This executes the external Fly GUI script when the button is clicked
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
-end)
+MovementTab:CreateButton({
+   Name = "Load Fly GUI V3",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+   end,
+})
 
--- Variables for control
 getgenv().LoopSpeedEnabled = false
 getgenv().WalkSpeedValue = 16
 
--- 1. The Switch (Toggle)
-Tab:AddSwitch("Loop WalkSpeed", function(bool)
-    getgenv().LoopSpeedEnabled = bool
-    print("Loop Speed is now: ", bool)
-end)
+MovementTab:CreateToggle({
+   Name = "Loop WalkSpeed",
+   CurrentValue = false,
+   Callback = function(bool)
+      getgenv().LoopSpeedEnabled = bool
+   end,
+})
 
--- 2. The Textbox (Speed Value)
-Tab:AddTextBox("Speed Amount", function(text)
-    local num = tonumber(text)
-    if num then
-        getgenv().WalkSpeedValue = num
-    end
-end)
+MovementTab:CreateInput({
+   Name = "Speed Amount",
+   PlaceholderText = "Enter Speed...",
+   RemoveTextAfterFocusLost = false,
+   Callback = function(text)
+      local num = tonumber(text)
+      if num then
+         getgenv().WalkSpeedValue = num
+      end
+   end,
+})
 
--- 3. The Background Loop
 task.spawn(function()
-    while task.wait() do
-        if getgenv().LoopSpeedEnabled then
-            pcall(function()
-                local char = game.Players.LocalPlayer.Character
-                if char and char:FindFirstChild("Humanoid") then
-                    char.Humanoid.WalkSpeed = getgenv().WalkSpeedValue
-                end
-            end)
-        end
-    end
+   while task.wait() do
+      if getgenv().LoopSpeedEnabled then
+         pcall(function()
+            local char = game.Players.LocalPlayer.Character
+            if char and char:FindFirstChild("Humanoid") then
+               char.Humanoid.WalkSpeed = getgenv().WalkSpeedValue
+            end
+         end)
+      end
+   end
 end)
 
 local InfiniteJumpEnabled = false
 
--- 1. Switch to Enable/Disable
-Tab:AddSwitch("Infinite Jump", function(Value)
-    InfiniteJumpEnabled = Value
-end)
+MovementTab:CreateToggle({
+   Name = "Infinite Jump",
+   CurrentValue = false,
+   Callback = function(Value)
+      InfiniteJumpEnabled = Value
+   end,
+})
 
--- 2. The Logic (Listen for Jump Request)
 game:GetService("UserInputService").JumpRequest:Connect(function()
-    if InfiniteJumpEnabled then
-        local player = game.Players.LocalPlayer
-        local character = player.Character
-        local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-        
-        if humanoid then
-            -- Set state to Jumping to allow another jump in mid-air
-            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-        end
-    end
+   if InfiniteJumpEnabled then
+      local player = game.Players.LocalPlayer
+      local character = player.Character
+      local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+      
+      if humanoid then
+         humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+      end
+   end
 end)
 
 local LockEnabled = false
 local LockedCFrame = nil
 
-Tab:AddSwitch("Lock Position", function(Value)
-    LockEnabled = Value
-    local char = game.Players.LocalPlayer.Character
-    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+MovementTab:CreateToggle({
+   Name = "Lock Position",
+   CurrentValue = false,
+   Callback = function(Value)
+      LockEnabled = Value
+      local char = game.Players.LocalPlayer.Character
+      local hrp = char and char:FindFirstChild("HumanoidRootPart")
 
-    if LockEnabled then
-        if hrp then
-            -- Save current position and anchor
+      if LockEnabled then
+         if hrp then
             LockedCFrame = hrp.CFrame
             hrp.Anchored = true
             
-            -- Optional: Loop to ensure you don't drift
             task.spawn(function()
-                while LockEnabled and hrp do
-                    hrp.CFrame = LockedCFrame
-                    hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
-                    hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
-                    task.wait()
-                end
+               while LockEnabled and hrp do
+                  hrp.CFrame = LockedCFrame
+                  hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
+                  hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
+                  task.wait()
+               end
             end)
-        end
-    else
-        -- Unlock position
-        if hrp then
+         end
+      else
+         if hrp then
             hrp.Anchored = false
-        end
-    end
-end)
+         end
+      end
+   end,
+})
 
-local Tab = window:AddTab("TP GYM") -- Name of tab
+-- ==========================================
+-- TP GYM TAB
+-- ==========================================
+local TpGymTab = Window:CreateTab("🌌 TP GYM")
 
--- Add your teleport button
-Tab:AddButton("Teleport to Nature Island", function()
-    -- Your specific SimpleSpy script logic
-    local args = {
-        [1] = "teleport"
-    }
-    game:GetService("ReplicatedStorage").NatureIslandTeleport:FireServer(unpack(args))
-end)
+TpGymTab:CreateButton({
+   Name = "Teleport to Nature Island",
+   Callback = function()
+      local args = {
+         [1] = "teleport"
+      }
+      game:GetService("ReplicatedStorage").NatureIslandTeleport:FireServer(unpack(args))
+   end,
+})
 
-Tab:AddButton("Teleport to Frost Island", function()
-    local args = {
-        [1] = "teleport"
-    }
+TpGymTab:CreateButton({
+   Name = "Teleport to Frost Island",
+   Callback = function()
+      local args = {
+         [1] = "teleport"
+      }
+      game:GetService("ReplicatedStorage").FrostIslandTeleport:FireServer(unpack(args))
+   end,
+})
 
-    game:GetService("ReplicatedStorage").FrostIslandTeleport:FireServer(unpack(args))
-end)
+TpGymTab:CreateButton({
+   Name = "Teleport to Inferno Island",
+   Callback = function()
+      local args = {
+         [1] = "teleport"
+      }
+      game:GetService("ReplicatedStorage").InfernoIslandTeleport:FireServer(unpack(args))
+   end,
+})
 
-Tab:AddButton("Teleport to Inferno Island", function()
-    local args = {
-        [1] = "teleport"
-    }
+-- ==========================================
+-- CREDITS TAB
+-- ==========================================
+local CreditsTab = Window:CreateTab("Credits 📜")
 
-    game:GetService("ReplicatedStorage").InfernoIslandTeleport:FireServer(unpack(args))
-end)
+CreditsTab:CreateSection("Credits")
 
-local CreditsTab = window:AddTab("Credits") -- Name of tab
+CreditsTab:CreateLabel({
+   Text = "🔥Developer By Kyo🔥",
+   Info = "🔥Kyo Private🔥"
+})
 
-CreditsTab:AddLabel("Kyo Private🙊")
-CreditsTab:AddLabel("👑Developer By: Kyo👑")
-CreditsTab:AddLabel("Muscle Empire👑")
+CreditsTab:CreateLabel({
+   Text = "🔥Designer: Kyo🔥",
+   Info = "OhUlol"
+})
